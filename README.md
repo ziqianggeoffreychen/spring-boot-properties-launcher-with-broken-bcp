@@ -12,7 +12,7 @@ Step 2: Reproduce the exception:
 Below log should be outputed:
 
 ```
-2020-09-02 23:32:05.858 ERROR 7072 --- [           main] c.e.restservice.RestServiceApplication   : Failed to convert private key
+2020-09-03 11:38:30.554 ERROR 22876 --- [           main] c.e.restservice.RestServiceApplication   : Failed to convert private key
 Exception in thread "main" java.lang.reflect.InvocationTargetException
         at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
         at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
@@ -23,8 +23,8 @@ Exception in thread "main" java.lang.reflect.InvocationTargetException
         at org.springframework.boot.loader.Launcher.launch(Launcher.java:58)
         at org.springframework.boot.loader.PropertiesLauncher.main(PropertiesLauncher.java:466)
 Caused by: java.lang.RuntimeException: Failed to convert private key
-        at com.example.restservice.RestServiceApplication.convertEncryptedPrivateKey(RestServiceApplication.java:70)
-        at com.example.restservice.RestServiceApplication.main(RestServiceApplication.java:38)
+        at com.example.restservice.RestServiceApplication.convertEncryptedPrivateKey(RestServiceApplication.java:105)
+        at com.example.restservice.RestServiceApplication.main(RestServiceApplication.java:49)
         ... 8 more
 Caused by: org.bouncycastle.openssl.PEMException: Unable to create OpenSSL PBDKF: PBKDF-OpenSSL SecretKeyFactory not available
         at org.bouncycastle.openssl.jcajce.PEMUtilities.getKey(Unknown Source)
@@ -32,7 +32,7 @@ Caused by: org.bouncycastle.openssl.PEMException: Unable to create OpenSSL PBDKF
         at org.bouncycastle.openssl.jcajce.PEMUtilities.crypt(Unknown Source)
         at org.bouncycastle.openssl.jcajce.JcePEMDecryptorProviderBuilder$1$1.decrypt(Unknown Source)
         at org.bouncycastle.openssl.PEMEncryptedKeyPair.decryptKeyPair(Unknown Source)
-        at com.example.restservice.RestServiceApplication.convertEncryptedPrivateKey(RestServiceApplication.java:63)
+        at com.example.restservice.RestServiceApplication.convertEncryptedPrivateKey(RestServiceApplication.java:98)
         ... 9 more
 Caused by: java.security.NoSuchAlgorithmException: PBKDF-OpenSSL SecretKeyFactory not available
         at javax.crypto.SecretKeyFactory.<init>(SecretKeyFactory.java:122)
@@ -85,8 +85,8 @@ main[1] where
   [18] org.bouncycastle.openssl.jcajce.PEMUtilities.crypt (null)
   [19] org.bouncycastle.openssl.jcajce.JcePEMDecryptorProviderBuilder$1$1.decrypt (null)
   [20] org.bouncycastle.openssl.PEMEncryptedKeyPair.decryptKeyPair (null)
-  [21] com.example.restservice.RestServiceApplication.convertEncryptedPrivateKey (RestServiceApplication.java:62)
-  [22] com.example.restservice.RestServiceApplication.main (RestServiceApplication.java:37)
+  [21] com.example.restservice.RestServiceApplication.convertEncryptedPrivateKey (RestServiceApplication.java:105)
+  [22] com.example.restservice.RestServiceApplication.main (RestServiceApplication.java:49)
   [23] sun.reflect.NativeMethodAccessorImpl.invoke0 (native method)
   [24] sun.reflect.NativeMethodAccessorImpl.invoke (null)
   [25] sun.reflect.DelegatingMethodAccessorImpl.invoke (null)
@@ -99,4 +99,11 @@ main[1] locals
 No local variables
 main[1] cont
 >
+```
+
+Step 4: change to JAR launcher and verify everything is normal.
+
+```
+$ sed -i s/ZIP/JAR/ pom.xml
+$ mvn clean package && java -jar target/spring-boot-properties-launcher-with-broken-bcp-0.0.1-SNAPSHOT.jar
 ```
