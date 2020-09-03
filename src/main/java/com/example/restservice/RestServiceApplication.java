@@ -55,7 +55,12 @@ public class RestServiceApplication {
 
     private static String getTextFileContent(String textFilePath) {
         logger.debug("Get content from text file:{}", textFilePath);
-        InputStream is = RestServiceApplication.class.getClassLoader().getResourceAsStream("classpath:" + textFilePath);
+        ClassLoader cl = RestServiceApplication.class.getClassLoader();
+        InputStream is = cl.getResourceAsStream("classpath:" + textFilePath);
+        if (is == null) {
+            logger.warn("Fail to locate the resource file from class path. Are you running this app without packaging? Remove prefix and try again.");
+            is = cl.getResourceAsStream(textFilePath);
+        }
         if (is != null) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(is));
             return (String)reader.lines().collect(Collectors.joining(System.lineSeparator()));
