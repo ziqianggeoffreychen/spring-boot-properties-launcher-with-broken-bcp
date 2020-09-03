@@ -8,8 +8,10 @@ import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 import org.bouncycastle.openssl.jcajce.JcePEMDecryptorProviderBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -30,13 +32,13 @@ public class RestServiceApplication {
     }
 
     public static void main(String[] args) {
-        SpringApplication.run(RestServiceApplication.class, args);
+        SpringApplication.run(RestServiceApplication.class, args).close();
         String pem = getTextFileContent("idp_encrypted_private.key.pem");
-        String masterKey = getTextFileContent("idp_certificate.cer.pem");
 
-        logger.info("Try to get private key via PEM and its master key:\n\n{}\n\n{}\n", pem, masterKey);
-        PrivateKey privateKey = convertEncryptedPrivateKey(pem, masterKey);
-        logger.debug("Successfully get private key");
+        logger.info("Try to get private key via PEM:\n\n{}\n", pem);
+        PrivateKey privateKey = convertEncryptedPrivateKey(pem, "123456");
+        logger.info("Successfully get private key" + privateKey.toString());
+        logger.info("Test is done. Now exit.");
     }
 
     private static String getTextFileContent(String textFilePath) {
