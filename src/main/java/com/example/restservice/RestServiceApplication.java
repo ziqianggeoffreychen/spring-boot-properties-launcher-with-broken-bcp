@@ -10,15 +10,13 @@ import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 import org.bouncycastle.openssl.jcajce.JcePEMDecryptorProviderBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationContext;
 
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.Security;
@@ -40,14 +38,14 @@ public class RestServiceApplication {
         String rawPemString;
 
         // Step 1: get X509 certificate
-        logger.debug("Start to get certificate");
+        logger.info("Start to get certificate");
         rawPemString = getTextFileContent("idp_certificate.cer.pem");
         X509Certificate x509cert = convertCertificate(rawPemString);
-        logger.debug("Successfully get certificate");
+        logger.info("Successfully get certificate: {}", x509cert.toString());
 
         // Step 2: get RSA private key
         rawPemString = getTextFileContent("idp_encrypted_private.key.pem");
-        logger.info("Try to get private key via PEM:\n\n{}\n", rawPemString);
+        logger.info("Try to get RSA private key via PEM:\n\n{}\n", rawPemString);
         PrivateKey privateKey = convertEncryptedPrivateKey(rawPemString, "123456");
         logger.info("Successfully get private key" + privateKey.toString());
         logger.info("Test is done. Now exit.");
